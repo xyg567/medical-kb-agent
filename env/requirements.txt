@@ -1,0 +1,11 @@
+# 第 1 周需要的依赖
+openai>=1.40
+requests
+python-dotenv
+
+# 第 2 周起再装（先注释，别急着装）
+# chromadb
+# sentence-transformers
+# fastapi
+# uvicorn[standard]
+# pypdf
