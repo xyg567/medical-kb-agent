@@ -50,6 +50,16 @@ def selftest() -> int:
         print("export_csv:", json.dumps(csv_out, ensure_ascii=False))
     bad = tools.call_tool("calculator", {"expression": "__import__('os').system('dir')"})
     print("calculator(注入用例):", json.dumps(bad, ensure_ascii=False))
+    doc = tools.call_tool("local_doc_search", {"query": "TACE 介入治疗的适应症", "top_k": 2})
+    print("local_doc_search:", json.dumps(
+        {
+            "ok": doc.get("ok"),
+            "source": doc.get("source"),
+            "count": doc.get("count"),
+            "top_chunk": doc["passages"][0]["chunk_id"] if doc.get("passages") else None,
+        },
+        ensure_ascii=False,
+    ))
     return 0
 
 

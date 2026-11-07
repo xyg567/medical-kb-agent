@@ -12,6 +12,7 @@ import ast
 import csv
 import json
 import os
+import re
 import urllib.parse
 import urllib.request
 from datetime import datetime
@@ -63,6 +64,21 @@ TOOL_SPECS: list[dict[str, Any]] = [
                     "rows": {"type": "array", "items": {"type": "object"}, "description": "记录数组，键名与 columns 对应"},
                 },
                 "required": ["filename", "columns", "rows"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "local_doc_search",
+            "description": "在本机资料库（data/docs 下的医学指南与科普文本）中检索与问题最相关的段落，返回原文与出处（文件名+chunk_id）。用户问本地资料、指南条目时必须调用它，不得凭记忆作答。",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query": {"type": "string", "description": "中文自然语言问题，如 'TACE 的适应症是什么'"},
+                    "top_k": {"type": "integer", "description": "返回段落数，1-10，默认 3"},
+                },
+                "required": ["query"],
             },
         },
     },
@@ -197,11 +213,78 @@ def export_csv(filename: str, columns: list[str], rows: list[dict[str, Any]]) ->
     return {"ok": True, "path": path, "rows": len(rows), "created_at": datetime.now().isoformat(timespec="seconds")}
 
 
+# ---------------------------------------------------------------- 本地文档检索
+DOCS_DIR = os.path.join(DATA_DIR, "docs")
+_CHUNK_SIZE = 160    # 每块字符数（去空白后）
+_CHUNK_OVERLAP = 30  # 相邻块重叠，避免答案正好被切断
+
+
+def _iter_doc_files() -> list[str]:
+    if not os.path.isdir(DOCS_DIR):
+        return []
+    return [
+        os.path.join(DOCS_DIR, name)
+        for name in sorted(os.listdir(DOCS_DIR))
+        if name.lower().endswith((".txt", ".md"))
+    ]
+
+
+def _load_chunks() -> list[dict[str, Any]]:
+    """把资料库切成带出处的块：chunk_id = 文件名#块号，这是'引用可追溯到原文'的关键。"""
+    chunks: list[dict[str, Any]] = []
+    step = _CHUNK_SIZE - _CHUNK_OVERLAP
+    for path in _iter_doc_files():
+        fname = os.path.basename(path)
+        with open(path, encoding="utf-8") as fh:
+            text = re.sub(r"\s+", "", fh.read())
+        for i in range(0, len(text), step):
+            seg = text[i:i + _CHUNK_SIZE]
+            chunks.append(
+                {
+                    "chunk_id": f"{fname}#{i // step}",
+                    "file": fname,
+                    "chunk_index": i // step,
+                    "char_range": [i, i + len(seg)],
+                    "text": seg,
+                }
+            )
+            if i + _CHUNK_SIZE >= len(text):
+                break
+    return chunks
+
+
+def _bigrams(s: str) -> set[str]:
+    """字符二元组集合：对中英混排都有效，且不依赖任何分词库。"""
+    if len(s) < 2:
+        return {s} if s else set()
+    return {s[i:i + 2] for i in range(len(s) - 1)}
+
+
+def local_doc_search(query: str, top_k: int = 3) -> dict[str, Any]:
+    """最小版检索：切块 → 二元组重叠打分 → top-k。它就是第二周手写 RAG 的检索端雏形
+    （W2 会把'二元组打分'换成 embedding + 向量库，但返回结构和出处约定保持不变）。"""
+    top_k = max(1, min(int(top_k or 3), 10))
+    chunks = _load_chunks()
+    if not chunks:
+        return {"ok": False, "source": "local-docs", "query": query,
+                "error": f"资料目录为空或不存在：{DOCS_DIR}"}
+    q = _bigrams((query or "").lower())
+    scored = [(len(q & _bigrams((c["file"] + c["text"]).lower())), c) for c in chunks]
+    scored.sort(key=lambda x: -x[0])
+    hits = [dict(c, score=s) for s, c in scored if s > 0][:top_k]
+    if not hits:
+        return {"ok": True, "source": "local-docs", "query": query, "count": 0, "passages": [],
+                "note": "本地资料中没有相关段落，回答必须说明'资料未提及'，禁止编造"}
+    return {"ok": True, "source": "local-docs", "query": query, "count": len(hits), "passages": hits,
+            "note": "每条含 chunk_id，回答必须在引用处标注出处"}
+
+
 # ---------------------------------------------------------------- 分发
 _DISPATCH = {
     "pubmed_search": lambda a: pubmed_search(a.get("query", ""), a.get("retmax", 5)),
     "calculator": lambda a: calculator(a.get("expression", "")),
     "export_csv": lambda a: export_csv(a.get("filename", "export.csv"), a.get("columns", []), a.get("rows", [])),
+    "local_doc_search": lambda a: local_doc_search(a.get("query", ""), a.get("top_k", 3)),
 }
 
 

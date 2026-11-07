@@ -21,7 +21,7 @@ user_query
 | 要素 | 在本工程中的落点 |
 |---|---|
 | 规划 | `llm.py` 输出 tool_calls（调哪个工具、传什么参数） |
-| 工具 | `tools.py`：`pubmed_search` / `calculator` / `export_csv` |
+| 工具 | `tools.py`：`pubmed_search` / `calculator` / `export_csv` / `local_doc_search` |
 | 记忆 | `core.py` 里的 `messages` 列表（含历史工具结果） |
 | 反思 | 工具报错原文回灌 + `MAX_STEPS` 兜底 + trace 留痕复盘 |
 
@@ -66,23 +66,26 @@ code\week1_demo/
 ├── agent/
 │   ├── config.py           # .env 加载、Key 脱敏
 │   ├── llm.py              # OpenAI 兼容客户端 + 离线规则 planner
-│   ├── tools.py            # 3 个工具 + 白名单安全求值
+│   ├── tools.py            # 4 个工具 + 白名单安全求值
 │   ├── core.py             # Agent 主循环（规划→执行→观察→再决策）
 │   └── trace.py            # 运行轨迹 JSON/JSONL 落盘
-├── data/fixtures_pubmed.json   # 断网时的示例文献（PMID 为 DEMO 编号）
+├── data/
+│   ├── fixtures_pubmed.json   # 断网时的示例文献（PMID 为 DEMO 编号）
+│   └── docs/                  # 本地医学演示语料（local_doc_search 的检索对象）
 ├── schema/trace.schema.json    # 统一中间结果格式（团队对接用）
 ├── runs/                   # 每次运行的 trace 与导出文件（已 gitignore）
 ├── .env.example
 └── .gitignore
 ```
 
-## 4. 三个工具
+## 4. 四个工具
 
 | 工具 | 作用 | 关键设计 |
 |---|---|---|
 | `pubmed_search` | 走 NCBI E-utilities（esearch + esummary）检索文献 | 超时 8s；网络失败自动回落本地 fixture，并在返回值里标 `source`，绝不让模型"以为"拿到真数据 |
 | `calculator` | 算术求值 | 用 `ast` 白名单，不用 `eval`；已实测拦截 `__import__('os').system(...)` 注入 |
 | `export_csv` | 结果导出 CSV 给 Excel/R | `utf-8-sig` 编码，Excel 打开中文不乱码 |
+| `local_doc_search` | 在 `data/docs/` 本地医学资料里检索最相关段落 | 切块带 `chunk_id` 出处；二元组重叠打分（零依赖）；资料外问题返回空并要求模型说明"资料未提及"——它是 W2 手写 RAG 的检索端雏形，届时把打分换成 embedding，返回结构和出处约定保持不变 |
 
 ## 5. 统一中间结果格式
 
@@ -100,7 +103,7 @@ tool_result → {index, type, name, ok, result_summary, latency_ms}
 ## 6. 已知限制（第一周不掩盖）
 
 1. **离线 planner 没有语言能力**：它只做关键词→工具的映射，用来证明链路通，不代表模型效果。
-2. **在线模式未在本机实测**：当前环境没有可用 API Key，代码路径按 OpenAI 规范写好，但需要你填 Key 后自测一次。
+2. ~~在线模式未本机实测~~ 已解决：2026-11-05 起在线模式多次实测跑通（OpenCode Go / deepseek-v4.1-flash，成功 trace 见 runs/），端点与会话头三个坑已在 config.py/llm.py 固化。在线与离线实测各留了一份验证记录。
 3. PubMed 未加重试与限流（NCBI 建议 ≤3 req/s、需带 `tool`/`email` 参数），模块一实现时要补。
 4. 没有向量库、没有 PDF 解析、没有多轮对话压缩——这些属于模块一/模块三。
 5. `export_csv` 只接受扁平行，嵌套结构未做展开。
