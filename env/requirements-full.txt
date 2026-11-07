@@ -1,0 +1,52 @@
+# 项目统一环境：D:\medproject\env\.venv （Python 3.12.13，167 个包）
+# 完整版本锁定见 requirements.lock.txt
+#
+# 重建（一条命令，注意三个参数都不能少）：
+#   $env:TMP="D:\medproject\env\tmp"; $env:TEMP=$env:TMP
+#   .\env\uv.exe venv env\.venv --cache-dir env\uv-cache --python 3.12
+#   .\env\uv.exe pip install --cache-dir env\uv-cache --python env\.venv\Scripts\python.exe --default-index https://pypi.org/simple -r env\requirements-full.txt
+
+# ---- 第一周（模块零）：严格来说零依赖，以下为后续模块准备 ----
+requests>=2.31
+openai>=1.40
+python-dotenv>=1.0
+tenacity>=9.0
+
+# ---- 数据处理与统计（模块一/二）----
+# pandas 必须 <3：statsmodels / pingouin / lifelines 目前都不支持 pandas 3.x
+pandas>=2.2,<3
+numpy>=2.0
+scipy>=1.13
+scikit-learn>=1.5
+statsmodels>=0.14
+lifelines>=0.29
+pingouin>=0.5
+openpyxl>=3.1
+xlsxwriter>=3.2
+
+# ---- 绘图（模块四）----
+matplotlib>=3.8
+seaborn>=0.13
+plotly>=5.20
+
+# ---- 文档解析与生成 ----
+pymupdf>=1.24
+pdfplumber>=0.11
+beautifulsoup4>=4.12
+lxml>=5.2
+python-docx>=1.1
+python-pptx>=1.0
+
+# ---- 知识库 / RAG（模块一/三）----
+chromadb>=0.5
+
+# ---- 桌面端与影像 ----
+PySide6>=6.6
+pydicom>=3.0
+
+# ---- 姿态估计（康复方向）----
+# 注意：mediapipe 目前只支持到 Python 3.12，这也是本项目锁 3.12 的原因
+mediapipe>=0.10
+
+# ---- 交互式开发 ----
+ipykernel>=6.29
