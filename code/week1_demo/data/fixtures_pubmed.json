@@ -1,0 +1,42 @@
+[
+  {
+    "pmid": "DEMO-001",
+    "title": "Gut microbiome composition predicts response to PD-1 blockade in advanced melanoma",
+    "journal": "Journal of Clinical Oncology (demo record)",
+    "year": "2023",
+    "authors": ["Zhang Y", "Li M", "Wang H"],
+    "doi": "10.0000/demo.001"
+  },
+  {
+    "pmid": "DEMO-002",
+    "title": "Fecal microbiota transplantation plus anti-PD-1 therapy in refractory melanoma: a phase 1 trial",
+    "journal": "Nature Medicine (demo record)",
+    "year": "2021",
+    "authors": ["Baruch EN", "Youngster I", "Ben-Betzalel G"],
+    "doi": "10.0000/demo.002"
+  },
+  {
+    "pmid": "DEMO-003",
+    "title": "Antibiotic exposure abrogates the survival benefit of immune checkpoint inhibitors",
+    "journal": "Annals of Oncology (demo record)",
+    "year": "2022",
+    "authors": ["Chen D", "Wu J", "Jin D"],
+    "doi": "10.0000/demo.003"
+  },
+  {
+    "pmid": "DEMO-004",
+    "title": "Machine learning models for predicting immune-related adverse events from routine laboratory data",
+    "journal": "Frontiers in Immunology (demo record)",
+    "year": "2024",
+    "authors": ["Sun Q", "Zhao L"],
+    "doi": "10.0000/demo.004"
+  },
+  {
+    "pmid": "DEMO-005",
+    "title": "Sample size estimation and statistical reporting standards in oncology clinical trials: a systematic review",
+    "journal": "BMC Medical Research Methodology (demo record)",
+    "year": "2020",
+    "authors": ["Kang S", "Park J"],
+    "doi": "10.0000/demo.005"
+  }
+]

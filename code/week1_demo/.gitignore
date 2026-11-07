@@ -1,0 +1,11 @@
+# 机密与本地文件
+.env
+*.local
+runs/
+__pycache__/
+*.pyc
+.venv/
+venv/
+.idea/
+.vscode/
+.DS_Store

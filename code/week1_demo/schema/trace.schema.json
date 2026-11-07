@@ -1,0 +1,33 @@
+{
+  "trace_schema_version": "1.0",
+  "description": "科研智能体单次运行的中间结果结构约定（第一周·模块零 统一数据格式）",
+  "type": "object",
+  "required": ["run_id", "started_at", "mode", "user_query", "steps", "final_answer", "status"],
+  "properties": {
+    "run_id": {"type": "string", "description": "uuid4，单次运行唯一标识"},
+    "started_at": {"type": "string", "description": "ISO8601 带时区"},
+    "finished_at": {"type": "string"},
+    "mode": {"type": "string", "enum": ["online", "offline"]},
+    "model": {"type": "string", "description": "在线模式下的模型名，离线模式为 rule-based-planner"},
+    "user_query": {"type": "string"},
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["index", "type"],
+        "properties": {
+          "index": {"type": "integer"},
+          "type": {"type": "string", "enum": ["llm_call", "tool_call", "tool_result", "final"]},
+          "name": {"type": "string", "description": "工具名，type=tool_call/tool_result 时必填"},
+          "arguments": {"type": "object"},
+          "result_summary": {"type": "string"},
+          "ok": {"type": "boolean"},
+          "latency_ms": {"type": "integer"}
+        }
+      }
+    },
+    "final_answer": {"type": "string"},
+    "status": {"type": "string", "enum": ["success", "max_steps_exceeded", "error"]},
+    "error": {"type": "string"}
+  }
+}

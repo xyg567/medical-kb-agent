@@ -1,0 +1,8 @@
+# 本 demo 只用 Python 标准库，无需安装任何第三方包。
+# 保留此文件是为了团队换用 LangChain / LlamaIndex 时统一版本记录。
+# python>=3.10
+# 可选（模块一/模块三会用到）：
+#   openai>=1.30      # 若改用官方 SDK 而非 urllib
+#   requests>=2.31
+#   PyMuPDF>=1.24     # PDF 解析
+#   chromadb>=0.5     # 向量库

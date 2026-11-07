@@ -1,0 +1,17 @@
+﻿[模式] offline / rule-based-planner（未调用大模型）
+
+== 最终回答 ==
+检索到 5 条相关文献（数据来源：pubmed-live）：
+[1] Interaction between drugs and the gut microbiome. — Gut, 2020; 作者：Weersma RK, Zhernakova A, Fu J; PMID: 32409589
+[2] Gut microbiome in HCC - Mechanisms, diagnosis and therapy. — Journal of hepatology, 2020; 作者：Schwabe RF, Greten TF; PMID: 31954488
+[3] Exercise-induced microbiota metabolite enhances CD8 T cell antitumor immunity promoting immunotherapy efficacy. — Cell, 2025; 作者：Phelps CM, Willis NB, Duan T; PMID: 40639377
+[4] Gut Microbiota in Cancer Immune Response and Immunotherapy. — Trends in cancer, 2021; 作者：Zhou CB, Zhou YL, Fang JY; PMID: 33674230
+[5] The gut microbiome and cancer response to immune checkpoint inhibitors. — The Journal of clinical investigation, 2025; 作者：Gazzaniga FS, Kasper DL; PMID: 39895632
+计算结果：(120-15)/120*100 = 87.5
+
+小结：以上结果为工具直接返回的元数据，未做语义筛选；正式文献调研还需要按纳入/排除标准做二次筛选，并对结论做原文核对。
+
+== 轨迹 ==
+run_id=700c4193-a1ed-4e87-b202-af14fc4b5c37
+status=success
+文件: runs/700c4193-a1ed-4e87-b202-af14fc4b5c37.json

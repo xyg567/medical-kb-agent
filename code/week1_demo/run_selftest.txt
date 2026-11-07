@@ -1,0 +1,5 @@
+﻿== 工具自检（不经过大模型）==
+calculator: {"ok": true, "expression": "(120-15)/120*100", "value": 87.5}
+pubmed_search: {"ok": true, "source": "pubmed-live", "count": 3}
+export_csv: {"ok": true, "path": "D:\\medproject\\week1_module0\\runs\\selftest_hits.csv", "rows": 3, "created_at": "2026-11-05T01:47:08"}
+calculator(注入用例): {"ok": false, "expression": "__import__('os').system('dir')", "error": "ValueError: 不支持的表达式节点：Call（只允许数字与四则/幂/取模）"}
