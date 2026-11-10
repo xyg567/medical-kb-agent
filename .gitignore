@@ -39,3 +39,11 @@ code/week1_demo/runs/
 .vscode/
 env/downloads/
 
+# 参考仓库克隆(第三方代码,本地学习用,不入库)
+ref/
+
+# 本周新装的数据库与 JDK(体积大,机器相关)
+env/neo4j-community-4.4.44/
+env/zulu11.92.113-ca-jdk11.0.33-win_x64/
+env/kg/
+
