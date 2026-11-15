@@ -47,3 +47,8 @@ env/neo4j-community-4.4.44/
 env/zulu11.92.113-ca-jdk11.0.33-win_x64/
 env/kg/
 
+
+# 第三方参考仓库(嵌套 git,不入库;解读见对话)
+ref/
+env/hf-cache/
+
